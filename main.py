@@ -4,12 +4,15 @@ K8s Deployment Generation Agent Flow
 Orchestrates multi-agent workflow for generating Kubernetes deployment files using Groq LLM
 """
 
+from asyncio import graph
 import os
 import sys
 from dotenv import load_dotenv
 load_dotenv()
 from langgraph.graph import StateGraph, END
 from langchain_groq import ChatGroq
+
+from IPython.display import Image, display
 
 # Add current directory to path for imports
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
@@ -105,7 +108,12 @@ def build_graph():
     # Set entry point
     workflow.set_entry_point("planner")
     
-    return workflow.compile()
+    workflowGraph =workflow.compile()
+    # Visualize
+    print(workflowGraph.get_graph().draw_ascii())
+    print(workflowGraph.get_graph().draw_mermaid())    
+    display(Image(graph.get_graph().draw_mermaid_png()))
+    return workflowGraph;
 
 
 def create_initial_state(task: str, max_retries: int = 3) -> AgentState:
