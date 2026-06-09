@@ -1,3 +1,6 @@
+python3 -m venv venv
+venv\Scripts\activate
+
 # K8s Deployment Generation Agent Flow
 
 A sophisticated multi-agent AI system using **Groq LLM** and **LangGraph** to intelligently generate, validate, and optimize Kubernetes deployment files.

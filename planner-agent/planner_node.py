@@ -4,7 +4,7 @@ Analyzes requirements and creates a plan for K8s deployment generation
 """
 
 from langchain_groq import ChatGroq
-from langchain.prompts import PromptTemplate
+from langchain_core.prompts import PromptTemplate
 import json
 
 planner_llm = ChatGroq(

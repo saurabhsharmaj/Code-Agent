@@ -4,7 +4,7 @@ Makes decisions on whether to approve deployment or retry based on review score
 """
 
 from langchain_groq import ChatGroq
-from langchain.prompts import PromptTemplate
+from langchain_core.prompts import PromptTemplate
 import json
 
 decision_llm = ChatGroq(
