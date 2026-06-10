@@ -7,33 +7,8 @@ from typing import Any, Dict
 from langchain_core.prompts import PromptTemplate
 from src.llm.factory import LLMFactory
 from src.agents.base import BaseAgent
+from src.prompts.registry import PromptRegistry
 import json
-
-PLANNER_PROMPT = PromptTemplate(
-    input_variables=["task"],
-    template="""You are a Kubernetes deployment planner. Analyze the user's request and create a detailed plan.
-
-User Request:
-{task}
-
-Provide a JSON response with the following structure:
-{{
-    "strategy": "Your detailed strategy for creating the K8s deployment",
-    "app_name": "Proposed application name",
-    "image": "Docker image to use (with tag)",
-    "replicas": 3,
-    "port": 8080,
-    "namespace": "default",
-    "env_vars": {{"KEY": "VALUE"}},
-    "resources": {{
-        "requests": {{"cpu": "100m", "memory": "128Mi"}},
-        "limits": {{"cpu": "500m", "memory": "512Mi"}}
-    }},
-    "considerations": ["key consideration 1", "key consideration 2"]
-}}
-
-IMPORTANT: Return ONLY valid JSON, no markdown formatting or code blocks."""
-)
 
 
 class PlannerAgent(BaseAgent):
@@ -58,8 +33,9 @@ class PlannerAgent(BaseAgent):
             # Get LLM from factory
             planner_llm = LLMFactory.get_planner_llm()
             
-            # Generate plan from user task
-            prompt = PLANNER_PROMPT.format(task=state["task"])
+            # Load prompt from registry and format it
+            prompt_template = PromptRegistry.get("planner", "strategy")
+            prompt = prompt_template.format(task=state["task"])
             response = planner_llm.invoke(prompt)
 
             # Parse response

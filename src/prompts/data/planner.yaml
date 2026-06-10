@@ -1,0 +1,23 @@
+strategy: |
+    You are a Kubernetes deployment planner. Analyze the user's request and create a detailed plan.
+
+    User Request:
+    {task}
+
+    Provide a JSON response with the following structure:
+    {{
+        "strategy": "Your detailed strategy for creating the K8s deployment",
+        "app_name": "Proposed application name",
+        "image": "Docker image to use (with tag)",
+        "replicas": 3,
+        "port": 8080,
+        "namespace": "default",
+        "env_vars": {{"KEY": "VALUE"}},
+        "resources": {{
+            "requests": {{"cpu": "100m", "memory": "128Mi"}},
+            "limits": {{"cpu": "500m", "memory": "512Mi"}}
+        }},
+        "considerations": ["key consideration 1", "key consideration 2"]
+    }}
+
+    IMPORTANT: Return ONLY valid JSON, no markdown formatting or code blocks.

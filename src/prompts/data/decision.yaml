@@ -1,0 +1,23 @@
+approval: |
+    You are a deployment decision maker. Based on the review score and retry count, decide whether to approve or retry.
+
+    Review Data:
+    {review}
+
+    Retry Status: {retries}/{max_retries}
+
+    Rules:
+    1. If score >= 8: Recommend "approve"
+    2. If score >= 6 and retries < max_retries: Consider "retry" with specific improvements
+    3. If score < 6 and retries < max_retries: Recommend "retry" with fixes
+    4. If max_retries reached: Recommend "approve_with_warnings" or "reject" based on score
+
+    Provide JSON response:
+    {{
+        "decision": "approve|retry|approve_with_warnings|reject",
+        "reasoning": "Your decision reasoning",
+        "suggested_fixes": ["fix 1", "fix 2"],
+        "can_retry": true|false
+    }}
+
+    IMPORTANT: Return ONLY valid JSON, no markdown formatting or code blocks.

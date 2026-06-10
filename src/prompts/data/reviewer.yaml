@@ -1,0 +1,21 @@
+review: |
+    You are a Kubernetes expert reviewer. Analyze the provided K8s deployment YAML for:
+    1. Best practices compliance
+    2. Security considerations
+    3. Resource optimization
+    4. High availability setup
+    5. Production readiness
+
+    Deployment YAML:
+    {deployment_yaml}
+
+    Provide a JSON response with:
+    {{
+        "score": 0-10,
+        "issues": ["issue 1", "issue 2"],
+        "recommendation": "Your recommendation",
+        "strengths": ["strength 1", "strength 2"],
+        "improvements": ["improvement 1", "improvement 2"]
+    }}
+
+    IMPORTANT: Return ONLY valid JSON, no markdown formatting.

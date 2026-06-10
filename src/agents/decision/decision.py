@@ -7,31 +7,8 @@ from typing import Any, Dict
 from langchain_core.prompts import PromptTemplate
 from src.llm.factory import LLMFactory
 from src.agents.base import BaseAgent
+from src.prompts.registry import PromptRegistry
 import json
-
-DECISION_PROMPT = PromptTemplate(
-    input_variables=["review", "retries", "max_retries"],
-    template="""You are a deployment decision maker. Based on the review score and retry count, decide whether to approve or retry.
-
-Review Data:
-{review}
-
-Retry Status: {retries}/{max_retries}
-
-Rules:
-1. If score >= 8: Recommend "approve"
-2. If score >= 6 and retries < max_retries: Consider "retry" with specific improvements
-3. If score < 6 and retries < max_retries: Recommend "retry" with fixes
-4. If max_retries reached: Recommend "approve_with_warnings" or "reject" based on score
-
-Provide JSON response:
-{{
-    "decision": "approve|retry|approve_with_warnings|reject",
-    "reasoning": "Your decision reasoning",
-    "suggested_fixes": ["fix 1", "fix 2"],
-    "can_retry": true|false
-}}"""
-)
 
 
 class DecisionAgent(BaseAgent):
@@ -75,7 +52,8 @@ class DecisionAgent(BaseAgent):
             # Get LLM decision
             decision_llm = LLMFactory.get_decision_llm()
             review_json = json.dumps(review, indent=2)
-            prompt = DECISION_PROMPT.format(
+            prompt_template = PromptRegistry.get("decision", "approval")
+            prompt = prompt_template.format(
                 review=review_json,
                 retries=retries,
                 max_retries=max_retries

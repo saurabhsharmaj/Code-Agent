@@ -7,31 +7,8 @@ from typing import Any, Dict
 from langchain_core.prompts import PromptTemplate
 from src.llm.factory import LLMFactory
 from src.agents.base import BaseAgent
+from src.prompts.registry import PromptRegistry
 import json
-
-REVIEW_PROMPT = PromptTemplate(
-    input_variables=["deployment_yaml"],
-    template="""You are a Kubernetes expert reviewer. Analyze the provided K8s deployment YAML for:
-1. Best practices compliance
-2. Security considerations
-3. Resource optimization
-4. High availability setup
-5. Production readiness
-
-Deployment YAML:
-{deployment_yaml}
-
-Provide a JSON response with:
-{{
-    "score": 0-10,
-    "issues": ["issue 1", "issue 2"],
-    "recommendation": "Your recommendation",
-    "strengths": ["strength 1", "strength 2"],
-    "improvements": ["improvement 1", "improvement 2"]
-}}
-
-IMPORTANT: Return ONLY valid JSON, no markdown formatting."""
-)
 
 
 class ReviewerAgent(BaseAgent):
@@ -67,7 +44,8 @@ class ReviewerAgent(BaseAgent):
 
             # Get LLM review
             reviewer_llm = LLMFactory.get_reviewer_llm()
-            prompt = REVIEW_PROMPT.format(deployment_yaml=state["deployment_yaml"])
+            prompt_template = PromptRegistry.get("reviewer", "review")
+            prompt = prompt_template.format(deployment_yaml=state["deployment_yaml"])
             response = reviewer_llm.invoke(prompt)
 
             # Parse response
