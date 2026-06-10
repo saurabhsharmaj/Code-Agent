@@ -14,6 +14,10 @@ class AgentState(TypedDict):
     deployment_yaml: str  # Generated K8s YAML
     review: Dict[str, Any]  # Review agent's feedback
     decision: str  # Decision (approve/retry)
+    risk_score: int  # Risk assessment (0-10)
+    requires_human_approval: bool  # Flag: needs human review?
+    human_approval: Optional[str]  # Human approval status (approved/rejected/pending)
+    human_notes: Optional[str]  # Human reviewer's notes
     retries: int  # Current retry count
     max_retries: int  # Maximum retry attempts
     errors: list[str]  # Error tracking

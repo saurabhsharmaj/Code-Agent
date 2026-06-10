@@ -37,6 +37,10 @@ def create_initial_state(task: str, max_retries: int = 3) -> AgentState:
         "deployment_yaml": "",
         "review": {},
         "decision": "",
+        "risk_score": 0,
+        "requires_human_approval": False,
+        "human_approval": None,
+        "human_notes": None,
         "retries": 0,
         "max_retries": max_retries,
         "errors": [],
@@ -76,6 +80,14 @@ def run_k8s_deployment_flow(task: str, max_retries: int = 3):
         print("="*60)
 
         print(f"Final Decision: {final_state.get('decision', 'unknown').upper()}")
+        print(f"Risk Score: {final_state.get('risk_score', 0)}/10")
+        print(f"Requires Human Approval: {'Yes' if final_state.get('requires_human_approval') else 'No'}")
+        
+        if final_state.get('human_approval'):
+            print(f"Human Approval Status: {final_state.get('human_approval', 'unknown').upper()}")
+        if final_state.get('human_notes'):
+            print(f"Human Notes: {final_state.get('human_notes')}")
+            
         print(f"Retries Used: {final_state.get('retries', 0)}/{max_retries}")
         print(f"Review Score: {final_state.get('review', {}).get('score', 'N/A')}/10")
 

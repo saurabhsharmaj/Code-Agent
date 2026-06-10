@@ -1,0 +1,92 @@
+---
+# Deployment Manifest
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: payment-processing-service
+  namespace: production
+  labels:
+    app: payment-processing-service
+    managed-by: ai-agent
+    created: '2026-06-10T17:03:50.920717'
+spec:
+  replicas: 5
+  selector:
+    matchLabels:
+      app: payment-processing-service
+  template:
+    metadata:
+      labels:
+        app: payment-processing-service
+        version: v1
+    spec:
+      containers:
+      - name: payment-processing-service
+        image: payment-service:v2.0
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 443
+          name: http
+        resources:
+          requests:
+            cpu: 500m
+            memory: 512Mi
+          limits:
+            cpu: 1000m
+            memory: 1Gi
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 443
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /ready
+            port: 443
+          initialDelaySeconds: 5
+          periodSeconds: 5
+        env:
+        - name: ENVIRONMENT
+          value: production
+        - name: LOG_LEVEL
+          value: info
+---
+# Service Manifest
+apiVersion: v1
+kind: Service
+metadata:
+  name: payment-processing-service-svc
+  namespace: production
+  labels:
+    app: payment-processing-service
+spec:
+  type: ClusterIP
+  selector:
+    app: payment-processing-service
+  ports:
+  - port: 443
+    targetPort: 443
+    protocol: TCP
+    name: http
+---
+# Horizontal Pod Autoscaler
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: payment-processing-service-hpa
+  namespace: production
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: payment-processing-service
+  minReplicas: 2
+  maxReplicas: 10
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: 70
