@@ -13,14 +13,15 @@ import os
 import sys
 from dotenv import load_dotenv
 
-# Add src directory to path for imports
-sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+# Load environment variables FIRST before any other imports
+load_dotenv()
+
+# Add parent directory to path for imports
+# This allows importing src.* modules
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from src.state.schemas import AgentState
 from src.graphs.deployment_graph.builder import build_deployment_graph
-
-# Load environment variables
-load_dotenv()
 
 # Verify Groq API key is set
 if not os.getenv("GROQ_API_KEY"):
